@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#163e35"><meta name="description" content="记得待办：快速记录、今日安排与多场景记录与个人账号同步。">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/ledger.css"><title>记得 · 备忘录与记账</title>
+</head>
+<body data-auth="guest">
+  <section id="auth-screen" class="auth-screen" aria-label="账号登录">
+    <div class="auth-intro"><a class="brand" href="/"><span class="brand-mark">✓</span><span>记得<small>想到的事，都记得</small></span></a><p class="eyebrow">工作 · 生活 · 每一个小计划</p><h1>把琐事放下，<br>把日子安排好。</h1><p>随手记下，按时跟进。用同一个账号，在手机和电脑继续自己的清单。</p><div class="auth-examples"><span>周末采购</span><span>明天开会</span><span>读完一本书</span><span>准备一场旅行</span></div><small>账号体验版 · 基础功能免费</small></div>
+    <div class="auth-card"><div id="auth-entry"><div class="auth-tabs"><button type="button" data-auth-mode="login" class="selected">登录</button><button type="button" data-auth-mode="register">注册账号</button></div><h2 id="auth-heading">回到自己的清单</h2><p id="auth-message" class="field-note">每个人都有独立的清单。</p><form id="auth-form"><label>账号<input id="auth-username" autocomplete="username" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_]+" placeholder="英文字母、数字或下划线"></label><label id="auth-name-field" hidden>怎么称呼你<input id="auth-name" maxlength="40" autocomplete="nickname" placeholder="可选昵称"></label><label id="auth-recovery-field" hidden>账号恢复码<input id="auth-recovery" autocomplete="off" maxlength="64" placeholder="注册时保存的恢复码"></label><label><span id="auth-password-label">密码</span><input id="auth-password" type="password" required minlength="12" maxlength="128" autocomplete="current-password" placeholder="至少12个字符"></label><p id="auth-error" class="form-error" role="alert"></p><button id="auth-submit" class="primary" type="submit">登录并进入</button><button id="auth-recover-button" type="button" class="text-button">忘记密码？使用恢复码</button></form><p class="field-note auth-footnote">注册后请保存账号恢复码。本体验版尚未接入短信或邮件找回。<br>测试数据保存在服务提供者的电脑，建议只录入测试事项。<a href="/privacy" target="_blank" rel="noopener">体验与隐私说明</a></p></div><div id="recovery-panel" hidden><p class="eyebrow">只显示这一次</p><h2>保存你的账号恢复码</h2><p>忘记密码时，用它找回账号。请保存在只有你能访问的位置。</p><code id="recovery-code"></code><button id="download-recovery" class="secondary">下载恢复码</button><button id="recovery-continue" class="primary">我已保存，进入清单</button></div></div>
+  </section>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="记得首页"><span class="brand-mark">✓</span><span>记得<small>我的空间</small></span></a>
+      <p class="nav-label">我的清单</p>
+      <nav id="filters" aria-label="待办分类">
+        <button data-filter="today" class="nav-item active"><span class="nav-icon">☀</span>今天要做<span class="count" id="count-today">0</span></button>
+        <button data-filter="all" class="nav-item"><span class="nav-icon">▤</span>全部待办<span class="count" id="count-all">0</span></button>
+        <button data-filter="next" class="nav-item"><span class="nav-icon">◷</span>接下来<span class="count" id="count-next">0</span></button>
+        <button data-filter="important" class="nav-item"><span class="nav-icon">☆</span>重要事项<span class="count" id="count-important">0</span></button>
+        <button data-filter="waiting" class="nav-item"><span class="nav-icon">◌</span>等对方回复<span class="count" id="count-waiting">0</span></button><button data-filter="unplanned" class="nav-item"><span class="nav-icon">▢</span>尚未安排<span class="count" id="count-unplanned">0</span></button><span class="nav-divider"></span>
+        <button data-filter="done" class="nav-item"><span class="nav-icon">✓</span>已完成<span class="count" id="count-done">0</span></button>
+        <button data-filter="trash" class="nav-item"><span class="nav-icon">↶</span>回收站<span class="count" id="count-trash">0</span></button>
+      </nav>
+      <div class="sidebar-bottom"><button id="open-settings" class="nav-item"><span class="nav-icon">⚙</span>账号与备份</button><div class="local-tag"><span></span> 账号体验版 <small>工作与生活，都记得</small></div></div>
+    </aside>
+    <main>
+      <header class="topbar"><span class="breadcrumb"><span id="current-account-name">我的空间</span> <span>/</span> <span id="breadcrumb-view">今天要做</span></span><button id="sync-button" class="sync-status" title="点击立即同步"><span id="sync-dot" class="status-dot"></span><span id="sync-text" role="status">正在连接…</span></button></header>
+      <div class="workspace">
+        <div class="page-heading"><div><p class="eyebrow" id="date-label"></p><h1 id="view-title">今天要做<span class="title-dot">.</span></h1><p class="subtitle" id="view-subtitle">把想到的事情记下来，按自己的节奏完成。</p></div><button id="new-task" class="primary"><span>＋</span> 新建待办</button></div>
+        <section id="summary" class="summary-strip" aria-label="待办概览"><div><span class="stat-name">今天待办</span><strong id="stat-today">0</strong></div><div><span class="stat-name">今天完成</span><strong id="stat-done">0</strong></div><div><span class="stat-name">已到提醒时间</span><strong id="stat-overdue">0</strong></div><div class="progress-wrap"><div><span>今日进度</span><span id="progress-label">还没有安排</span></div><progress id="day-progress" max="100" value="0"></progress></div></section>
+        <div id="connection-notice" class="notice" hidden></div>
+        <div id="conflict-notice" class="notice conflict" hidden><span id="conflict-message"></span><button id="review-conflicts">查看并处理</button></div>
+        <form id="quick-form" class="quick-add"><span class="quick-plus">＋</span><input id="quick-title" maxlength="160" aria-label="快速记录待办" placeholder="有什么需要记下来？" autocomplete="off" required><button type="submit">记下来 <span>↵</span></button></form>
+        <div class="quick-options"><span id="quick-category-note">记入工作</span><label>安排到 <select id="quick-plan"><option value="today">今天</option><option value="tomorrow">明天</option><option value="none">暂不安排</option></select></label></div><div class="list-toolbar"><div class="category-tabs" id="categories" aria-label="分类筛选"><button class="selected" data-category="">全部</button><button data-category="工作">工作</button><button data-category="生活">生活</button><button data-category="其他">其他</button></div><label class="search"><span>⌕</span><input id="search" type="search" aria-label="搜索标题或备注" placeholder="搜索待办"></label></div>
+        <div class="list-options"><label>处理状态 <select id="status-filter"><option value="">全部状态</option><option value="todo">待处理</option><option value="doing">进行中</option><option value="waiting">等对方回复</option></select></label><button id="manage-categories" class="text-button">＋ 自定义分类</button></div><div id="task-list" class="task-list"></div>
+        <div id="empty" class="empty-state"><div class="empty-symbol">✓</div><h2 id="empty-title">今天，从一件小事开始</h2><p id="empty-description">记下要做的事，让脑袋轻松一点。</p><button id="empty-add" class="text-button">＋ 记下第一件事</button></div>
+        <footer class="page-footer"><span>安排到今天 ≠ 设置提醒</span><span>关闭页面后，本版不保证到期提醒</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="editor" aria-labelledby="editor-heading"><form id="editor-form">
+  <div class="dialog-heading"><div><p class="eyebrow">留给稍后的自己</p><h2 id="editor-heading">记一件事</h2></div><button type="button" data-close="editor" class="icon-button" aria-label="关闭编辑">×</button></div><input type="hidden" id="edit-id">
+  <div class="ed-body">
+  <label class="ed-title-field">要做什么<input id="edit-title" maxlength="160" placeholder="写下一件具体的事" required></label>
+  <div class="ed-plan-row"><span class="ed-plan-label">安排到</span><div class="ed-chips"><button type="button" data-plan="today">今天</button><button type="button" data-plan="tomorrow">明天</button><button type="button" data-plan="none">暂不安排</button></div></div>
+  <div class="form-row"><label>分类<input id="edit-category" list="category-options" maxlength="20" required autocomplete="off"><datalist id="category-options"></datalist></label><label>处理状态<select id="edit-status"><option value="todo">待处理</option><option value="doing">进行中</option><option value="waiting">等对方回复</option></select></label></div>
+  <label class="check-label ed-important"><input id="edit-important" type="checkbox"> 标为重要事项</label>
+  <div class="form-row"><label>计划日期<input id="edit-planned" type="date"></label><label>重复周期<select id="edit-repeat"><option value="none">不重复</option><option value="daily">每天</option><option value="weekly">每周</option><option value="monthly">每月</option></select></label></div>
+  <details class="ed-more" id="ed-more"><summary>提醒与更多<span class="ed-more-hint">截止、提醒、跟进、备注</span></summary>
+  <p id="repeat-note" class="field-note" hidden>完成并同步后生成下一次，保留本次完成记录。按服务所在时区计算；月末取当月最后一天，错过的周期合并到下一次。</p>
+  <label>截止时间 <span class="optional">最晚什么时候完成</span><input id="edit-deadline" type="datetime-local"></label>
+  <label>提醒时间 <span class="optional">什么时候提醒你</span><input id="edit-due" type="datetime-local"></label>
+  <div class="preset-row"><button type="button" data-remind="hour">1小时后</button><button type="button" data-remind="tomorrow">明早9点</button><button type="button" data-remind="afternoon">下一个下午3点</button><button type="button" data-remind="before">截止前30分钟</button><button type="button" data-remind="none">清除提醒</button></div>
+  <label id="follow-up-field">下次跟进时间 <span class="optional">到时提醒联系对方</span><input id="edit-followup" type="datetime-local"></label>
+  <p class="field-note">计划日期不触发提醒。提醒与跟进目前仅在打开的页面内显示，锁屏和关闭页面后不保证送达。</p>
+  <label>备注 / 下一步<textarea id="edit-notes" rows="4" maxlength="5000" placeholder="补充细节，或者写下下一步……"></textarea></label>
+  </details>
+  <p id="edit-error" class="form-error" role="alert"></p>
+  </div>
+  <div class="dialog-actions"><button type="button" id="trash-task" class="danger-text">移入回收站</button><div><button type="button" data-close="editor" class="secondary">取消</button><button class="primary" type="submit">保存待办</button></div></div>
+</form></dialog>
+
+  <dialog id="settings" aria-labelledby="settings-heading"><div class="dialog-heading"><div><p class="eyebrow">属于你的清单</p><h2 id="settings-heading">账号与备份</h2></div><button data-close="settings" class="icon-button" aria-label="关闭设置">×</button></div><section class="settings-section"><h3>我的账号</h3><p id="account-profile"></p><p class="field-note">手机和电脑登录同一账号即可同步。每个账号拥有独立清单。</p><div class="button-row"><button id="change-password" class="secondary">修改密码</button><button id="logout" class="danger-text">退出账号</button></div></section><section class="settings-section"><h3>备份与恢复</h3><p id="backup-status"></p><p>导出自己的清单；导入时先预览，再选择要恢复的事项。</p><div class="button-row"><button id="export" class="secondary">导出 JSON 备份</button><button id="import-button" class="secondary">导入 / 恢复预览</button><input id="import-file" type="file" accept=".json,application/json" hidden></div><p id="last-sync-info" class="field-note"></p></section><section class="settings-section"><h3>在手机上使用</h3><p id="a2hs-tip">把记得添加到手机主屏幕，就像普通 App 一样打开。</p><p class="field-note">iPhone：用 Safari 打开本页 → 底部「分享」→「添加到主屏幕」。安卓：用浏览器菜单 →「添加到主屏幕」。添加后从主屏图标直接进入，不用再输入网址。</p><p class="field-note">已打开并登录的页面可离线记事，联网后补传。重新打开页面需要联网确认账号。页面提醒不等于锁屏通知。</p><button id="a2hs-button" class="secondary" hidden>添加到主屏幕</button></section></dialog>
+  <dialog id="password-dialog" aria-labelledby="password-heading"><div class="dialog-heading"><h2 id="password-heading">修改密码</h2><button data-close="password-dialog" class="icon-button" aria-label="关闭修改密码">×</button></div><form id="password-form"><label>当前密码<input id="current-password" type="password" required maxlength="128" autocomplete="current-password"></label><label>新密码<input id="new-password" type="password" required minlength="12" maxlength="128" autocomplete="new-password"></label><p class="field-note">修改后，其他设备需要重新登录。</p><p id="password-error" class="form-error" role="alert"></p><button class="primary" type="submit">保存新密码</button></form></dialog>
+  <dialog id="conflicts" aria-labelledby="conflicts-heading"><div class="dialog-heading"><h2 id="conflicts-heading">处理同时修改的待办</h2><button data-close="conflicts" class="icon-button" aria-label="关闭冲突列表">×</button></div><p>你的修改仍在这台设备上。可以保留两份，再决定怎么整理。</p><div id="conflict-list"></div></dialog>
+  <dialog id="leave-editor" aria-labelledby="leave-heading"><h2 id="leave-heading">修改还没有保存</h2><p>要继续编辑，还是放弃这次修改？</p><div class="button-row"><button id="continue-editing" class="primary">继续编辑</button><button id="discard-editor" class="secondary">放弃修改</button></div></dialog>
+<dialog id="snooze-dialog" aria-labelledby="snooze-heading"><div class="dialog-heading"><h2 id="snooze-heading">稍后提醒</h2><button data-close="snooze-dialog" class="icon-button" aria-label="关闭延后提醒">×</button></div><p id="snooze-task-title"></p><div class="preset-row"><button data-snooze="30">30分钟后</button><button data-snooze="60">1小时后</button><button data-snooze="tomorrow">明早9点</button></div><form id="snooze-form"><label>自选时间<input id="snooze-time" type="datetime-local" required></label><button class="primary">确认延后</button></form></dialog>
+<dialog id="restore-dialog" aria-labelledby="restore-heading"><div class="dialog-heading"><h2 id="restore-heading">备份恢复预览</h2><button data-close="restore-dialog" class="icon-button" aria-label="关闭恢复预览">×</button></div><p id="restore-summary"></p><p class="field-note">只修改你勾选的记录。未勾选和备份中没有的记录保持原样；恢复前会下载当前清单备份。并发变更会提示冲突。</p><div id="restore-list"></div><button id="apply-restore" class="primary">恢复所选记录</button></dialog>
+<section id="reminders" class="reminders" aria-label="到期提醒" aria-live="polite"></section>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/qrcode.js"></script><script type="module" src="/app.js"></script>
+</body>
+</html>
